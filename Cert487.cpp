@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <fstream>
 #include <string>
+#include <cstring>
 #include "Cert487.h"
 #include "SDES.h"
 
@@ -28,13 +29,13 @@ Cert487::Cert487(string fileName){
             data.serialNumber = stoi(parsedInput[1]);
         }
         else if(parsedInput[0].compare("signatureAlgorithmIdentity") == 0){
-           data. signatureAlgorithmIdentity = parsedInput[1];
+           strcpy(data.signatureAlgorithmIdentity, parsedInput[1].c_str());
         }
         else if(parsedInput[0].compare("signatureAlgorithmParameters") == 0){
-            data.signatureAlgorithmParameters = parsedInput[1];
+            strcpy(data.signatureAlgorithmParameters, parsedInput[1].c_str());
         }
         else if(parsedInput[0].compare("issuerName") == 0){
-            data.issuerName = parsedInput[1];
+            strcpy(data.issuerName, parsedInput[1].c_str());
         }
         else if(parsedInput[0].compare("validNotBefore") == 0){
             data.validNotBefore = stoi(parsedInput[1]);
@@ -43,31 +44,31 @@ Cert487::Cert487(string fileName){
             data.validNotAfter = stoi(parsedInput[1]);
         }
         else if(parsedInput[0].compare("subjectName") == 0){
-            data.subjectName = parsedInput[1];
+            strcpy(data.subjectName, parsedInput[1].c_str());
         }
         else if(parsedInput[0].compare("publicKeyAlgorithm") == 0){
-            data.publicKeyAlgorithm = parsedInput[1];
+            strcpy(data.publicKeyAlgorithm, parsedInput[1].c_str());
         }
         else if(parsedInput[0].compare("publicKeyParameters") == 0){
-            data.publicKeyParameters = parsedInput[1];
+            strcpy(data.publicKeyParameters, parsedInput[1].c_str());
         }
         else if(parsedInput[0].compare("publicKey") == 0){
             data.publicKey = stoi(parsedInput[1]);
         }  
         else if(parsedInput[0].compare("issuerUniqueIdentifier") == 0){
-            data.issuerUniqueIdentifier = parsedInput[1];
+            strcpy(data.issuerUniqueIdentifier, parsedInput[1].c_str());
         }      
         else if(parsedInput[0].compare("extensions") == 0){
-            data.extensions = parsedInput[1];
+            strcpy(data.extensions, parsedInput[1].c_str());
         }   
         else if(parsedInput[0].compare("signatureAlgorithm") == 0){
-            data.signatureAlgorithm = parsedInput[1];
+            strcpy(data.signatureAlgorithm, parsedInput[1].c_str());
         }   
         else if(parsedInput[0].compare("signatureParameters") == 0){
-            data.signatureParameters = parsedInput[1];
+            strcpy(data.signatureParameters, parsedInput[1].c_str());
         }
         else if(parsedInput[0].compare("signature") == 0){
-            data.signature = parsedInput[1];
+            data.signature = parsedInput[1][0];
         }
         else if(parsedInput[0].compare("trust") == 0){
             data.trust = stoi(parsedInput[1]);
@@ -81,7 +82,8 @@ Cert487::Cert487(string fileName){
 }
 
 void Cert487::sign(string signerFileName){
-    data.signature.push_back(cbcHash(signerFileName));
+    char hash = cbcHash(signerFileName);
+    data.signature = hash;
 }
 
 int Cert487::getSerialNumber(){
@@ -126,7 +128,8 @@ void Cert487::print(){
     printLine("signatureAlgorithm", data.signatureAlgorithm);
     printLine("signatureParameters", data.signatureParameters);
     printLine("trust", to_string(data.trust));
-    printLine("signature", data.signature);
+    string signature(1, data.signature);
+    printLine("signature", signature);
 }
 
 void Cert487::printLess(){
@@ -159,7 +162,8 @@ void Cert487::writeToFile(string fileName){
     writeLineToFile(fileOut, "signatureAlgorithm", data.signatureAlgorithm);
     writeLineToFile(fileOut, "signatureParameters", data.signatureParameters);
     writeLineToFile(fileOut, "trust", to_string(data.trust));
-    writeLineToFile(fileOut, "signature", data.signature);
+    string signature(1, data.signature);
+    writeLineToFile(fileOut, "signature", signature);
 
     fileOut.close();
 }

@@ -7,42 +7,25 @@ using namespace std;
 struct CertData{
     int version;
     int serialNumber;
-    string signatureAlgorithmIdentity;
-    string signatureAlgorithmParameters;
-    string issuerName;
+    char signatureAlgorithmIdentity[50];
+    char signatureAlgorithmParameters[50];
+    char issuerName[50];
     int validNotBefore;
     int validNotAfter;
-    string subjectName;
-    string publicKeyAlgorithm;
-    string publicKeyParameters;
+    char subjectName[50];
+    char publicKeyAlgorithm[50];
+    char publicKeyParameters[50];
     int publicKey;
-    string issuerUniqueIdentifier;
+    char issuerUniqueIdentifier[50];
     int trust;
-    string extensions;
-    string signatureAlgorithm;
-    string signatureParameters;
-    string signature;
+    char extensions[50];
+    char signatureAlgorithm[50];
+    char signatureParameters[50];
+    char signature;
 };
 
 class Cert487{
     private:
-        // int version;
-        // int serialNumber;
-        // string signatureAlgorithmIdentity;
-        // string signatureAlgorithmParameters;
-        // string issuerName;
-        // int validNotBefore;
-        // int validNotAfter;
-        // string subjectName;
-        // string publicKeyAlgorithm;
-        // string publicKeyParameters;
-        // int publicKey;
-        // string issuerUniqueIdentifier;
-        // int trust;
-        // string extensions;
-        // string signatureAlgorithm;
-        // string signatureParameters;
-        // string signature;
         CertData data;
         void printLine(string label, string data);
         void parseCertLine(string input, string output[2]);
@@ -51,7 +34,7 @@ class Cert487{
         void sign(string signerFileName);
     public:
         Cert487(string fileName);
-        Cert487();
+        Cert487(CertData data);
         void print();
         void printLess();
         void writeToFile(string fileName);
