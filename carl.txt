@@ -1,0 +1,17 @@
+version=1
+serialNumber=3
+signatureAlgorithmIdentity=cbc
+signatureAlgorithmParameters=none
+issuerName=Bob
+validNotBefore=1
+validNotAfter=4
+subjectName=Carl
+publicKeyAlgorithm=rsa
+publicKeyParameters=none
+publicKey=17
+issuerUniqueIdentifier=asdf123
+extensions=none
+signatureAlgorithm=cbc
+signatureParameters=none
+trust=3
+signature=G
