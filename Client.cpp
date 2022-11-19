@@ -13,6 +13,7 @@ struct DiffieHellmanServerData{
 };
 
 int main(){
+// SETUP CONNECTION /////////////////////////////////////////////////////////////////////////
     // create socket
     int socket_description = socket(AF_INET, SOCK_STREAM, 0);
     if(socket_description == -1){
@@ -30,7 +31,11 @@ int main(){
         cout << "Unable to connect" << endl;
 		return 1;
 	}
+// RECEIVE CERTS ////////////////////////////////////////////////////////////////////////////
 
+    recv(socket_description, &encryptedBytes, sizeof(encryptedBytes), 0);
+
+// CLOSE CONNECTION /////////////////////////////////////////////////////////////////////////
     close(socket_description);
 
     return 0;

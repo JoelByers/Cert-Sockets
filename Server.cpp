@@ -5,6 +5,7 @@
 #include <time.h>
 #include <cstdlib>
 #include <cstring>
+#include "Cert487.h"
 
 using namespace std;
 
@@ -14,8 +15,9 @@ struct DiffieHellmanServerData{
     int serverResult;
 };
 
-int main(){
+int main(int argc, char** argv){
 
+// SETUP CONNECTION /////////////////////////////////////////////////////////////////////////
     // create socket
     int socket_description = socket(AF_INET, SOCK_STREAM, 0);
     if(socket_description == -1){
@@ -46,6 +48,16 @@ int main(){
         return 1;
     }
 
+// SEND CERTS ////////////////////////////////////////////////////////////////////////////
+
+    Cert487 cert("alice.txt");
+    if(send(new_socket , &cert, sizeof(cert), 0) < 0)
+	{
+		cout << "Unable to send server data to client";
+		return 1;
+	}
+
+// CLOSE CONNECTION /////////////////////////////////////////////////////////////////////////
     close(socket_description);
 
     return 0;
