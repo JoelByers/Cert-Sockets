@@ -3,6 +3,7 @@
 #include <arpa/inet.h>
 #include <cstring>
 #include <unistd.h>
+#include "Cert487.h"
 
 using namespace std;
 
@@ -32,8 +33,12 @@ int main(){
 		return 1;
 	}
 // RECEIVE CERTS ////////////////////////////////////////////////////////////////////////////
+    CertData incomingCert;
 
-    recv(socket_description, &encryptedBytes, sizeof(encryptedBytes), 0);
+    recv(socket_description, &incomingCert, sizeof(incomingCert), 0);
+
+    Cert487 cert(incomingCert);
+    cert.print();
 
 // CLOSE CONNECTION /////////////////////////////////////////////////////////////////////////
     close(socket_description);

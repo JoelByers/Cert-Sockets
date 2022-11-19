@@ -51,7 +51,10 @@ int main(int argc, char** argv){
 // SEND CERTS ////////////////////////////////////////////////////////////////////////////
 
     Cert487 cert("alice.txt");
-    if(send(new_socket , &cert, sizeof(cert), 0) < 0)
+    cert.print();
+    CertData data = cert.getData();
+
+    if(send(new_socket , &data, sizeof(cert), 0) < 0)
 	{
 		cout << "Unable to send server data to client";
 		return 1;
