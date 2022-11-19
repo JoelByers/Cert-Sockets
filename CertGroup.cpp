@@ -34,11 +34,12 @@ bool CertGroup::findNextLink(int currentIndex, int certTwoSerial){
     for(int i = 0; i < certs.size(); i++){        
         // check if i cert was signed by currentIndex
         // i <- currentIndex
-        //cerr << "c: " << currentIndex << " i: " << i << endl;
         if(certs.at(i).getIssuer() == certs.at(currentIndex).getSubjectName()
             && certs.at(i).getSerialNumber() != certs.at(currentIndex).getSerialNumber()){
             // handle self signed certs
             // if currentIndex signed checkIndex
+            cout << "Chain Verified to " << certs.at(i).getSerialNumber() << " (" << certs.at(i).getSubjectName() << ")" << endl;;
+
             if(certs.at(i).getSerialNumber() == certTwoSerial){
                 // chain is complete
                 return true;
