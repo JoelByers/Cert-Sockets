@@ -4,6 +4,7 @@
 #include <cstring>
 #include <unistd.h>
 #include "Cert487.h"
+#include "CertGroup.h"
 
 using namespace std;
 
@@ -33,12 +34,38 @@ int main(){
 		return 1;
 	}
 // RECEIVE CERTS ////////////////////////////////////////////////////////////////////////////
-    CertData incomingCert;
+    
+    CertGroup group;
 
-    recv(socket_description, &incomingCert, sizeof(incomingCert), 0);
+    int numCerts;
+    recv(socket_description, &numCerts, sizeof(numCerts), 0);
 
-    Cert487 cert(incomingCert);
-    cert.print();
+    for(int i = 0; i < numCerts; i++){
+        CertData incomingCert;
+        recv(socket_description, &incomingCert, sizeof(incomingCert), 0);
+        Cert487 cert(incomingCert);
+
+        group.addCert(cert);
+    }
+
+    group.print();
+
+    int start;
+    int end;
+
+    cout << "Enter serial numbers of start and end of chain:" << endl;
+    cout << "Start: ";
+    cin >> start;
+    cout << "End: ";
+    cin >> end;
+    cout << endl;
+
+    if(group.validateChain(start, end)){
+        cout << "A valid chain can be found" << endl;
+    }
+    else{
+        cout << "No valid chain can be found" << endl;
+    }
 
 // CLOSE CONNECTION /////////////////////////////////////////////////////////////////////////
     close(socket_description);

@@ -50,15 +50,26 @@ int main(int argc, char** argv){
 
 // SEND CERTS ////////////////////////////////////////////////////////////////////////////
 
-    Cert487 cert("alice.txt");
-    cert.print();
-    CertData data = cert.getData();
+    int numCerts = argc - 1;
 
-    if(send(new_socket , &data, sizeof(cert), 0) < 0)
-	{
-		cout << "Unable to send server data to client";
-		return 1;
-	}
+    if(send(new_socket , &numCerts, sizeof(numCerts), 0) < 0)
+    {
+        cout << "Unable to send server data to client";
+        return 1;
+    }
+
+    for(int i = 0; i < numCerts; i++){
+        Cert487 cert(argv[i + 1]);
+        cert.printLess();
+        cout << "----------------------------------------------------\n";
+        CertData data = cert.getData();
+
+        if(send(new_socket , &data, sizeof(cert), 0) < 0)
+        {
+            cout << "Unable to send server data to client";
+            return 1;
+        }
+    }
 
 // CLOSE CONNECTION /////////////////////////////////////////////////////////////////////////
     close(socket_description);
