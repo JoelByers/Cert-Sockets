@@ -35,7 +35,7 @@ bool CertGroup::validateChain(int certOneSerial, int certTwoSerial, CRL crl){
 }
 
 bool CertGroup::findNextLink(int currentIndex, int certTwoSerial, CRL crl){
-    if(crl.find(currentIndex)==true){
+    if(crl.find(certs.at(currentIndex).getSerialNumber())==true){
         cout<<"Cert found in CRL connection cannot be trusted."<<endl;
         return false;
     }
@@ -46,6 +46,7 @@ bool CertGroup::findNextLink(int currentIndex, int certTwoSerial, CRL crl){
             && certs.at(i).getSerialNumber() != certs.at(currentIndex).getSerialNumber()){
             // handle self signed certs
             // if currentIndex signed checkIndex
+
             cout << "Chain Verified to " << certs.at(i).getSerialNumber() << " (" << certs.at(i).getSubjectName() << ")" << endl;;
 
             if(certs.at(i).getSerialNumber() == certTwoSerial){
