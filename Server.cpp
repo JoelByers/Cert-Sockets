@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <cstring>
 #include "Cert487.h"
+#include "CRL.h"
 
 using namespace std;
 
@@ -47,6 +48,29 @@ int main(int argc, char** argv){
         cout << "Failed to accept client connection" << endl;
         return 1;
     }
+// Send CRL //////////////////////////////////////////////////////////////////////////////
+
+    CRL crl("crl.txt");
+    cout << "\nCRL:" << endl;
+    crl.print();
+    cout << "=============================================" << endl;
+
+    int numObj = crl.getNumObj();
+
+    if(send(new_socket , &numObj, sizeof(numObj), 0) < 0)
+    {
+        cout << "Unable to send server data to client";
+        return 1;
+    } 
+
+    for(int i = 0; i < numObj; i++){
+        crlobject obj = crl.getObj(i);
+        if(send(new_socket , &obj, sizeof(obj), 0) < 0)
+        {
+            cout << "Unable to send server data to client";
+            return 1;
+        } 
+    }  
 
 // SEND CERTS ////////////////////////////////////////////////////////////////////////////
 
@@ -58,6 +82,7 @@ int main(int argc, char** argv){
         return 1;
     }
 
+    cout << "Certs:" << endl;
     for(int i = 0; i < numCerts; i++){
         Cert487 cert(argv[i + 1]);
         cert.printLess();

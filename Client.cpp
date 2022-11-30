@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include "Cert487.h"
 #include "CertGroup.h"
+#include "CRL.h"
 
 using namespace std;
 
@@ -33,6 +34,22 @@ int main(){
         cout << "Unable to connect" << endl;
 		return 1;
 	}
+// RECEIVE CRL //////////////////////////////////////////////////////////////////////////////
+
+    CRL crl;
+
+    int numCrlObj;
+    recv(socket_description, &numCrlObj, sizeof(numCrlObj), 0);
+    for(int i = 0; i < numCrlObj; i++){
+        crlobject obj;
+        recv(socket_description, &obj, sizeof(obj), 0);
+        crl.addObj(obj);
+    }
+
+    cout << "CRL:" << endl;
+    crl.print();
+    cout << "=============================================" << endl;
+
 // RECEIVE CERTS ////////////////////////////////////////////////////////////////////////////
     
     CertGroup group;
@@ -48,7 +65,9 @@ int main(){
         group.addCert(cert);
     }
 
+    cout << "Certs:" << endl;
     group.print();
+    cout << "=============================================" << endl;
 
     int start;
     int end;
