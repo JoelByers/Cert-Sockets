@@ -1,4 +1,5 @@
 #include "CertGroup.h"
+//#include "CRL.h"
 #include <iostream>
 #include <stack>
 #include <algorithm>
@@ -9,10 +10,13 @@ void CertGroup::addCert(Cert487 cert){
     certs.push_back(cert);
 }
 
-bool CertGroup::validateChain(int certOneSerial, int certTwoSerial){
+bool CertGroup::validateChain(int certOneSerial, int certTwoSerial, CRL crl){
     // holds the indecies of the chain from the group
     int chainStart = -1;
-
+    if(crl.find(certOneSerial)==true||crl.find(certTwoSerial)==true){
+        cout<<"Starting or ending cert found in CRL. Connection cannot be trusted"<<endl;
+        return false;
+    }
     // find starting cert
     for(int i = 0; i < certs.size(); i++){
         if(certs.at(i).getSerialNumber() == certOneSerial){
@@ -27,10 +31,14 @@ bool CertGroup::validateChain(int certOneSerial, int certTwoSerial){
         return false;
     }
 
-    return findNextLink(chainStart, certTwoSerial);
+    return findNextLink(chainStart, certTwoSerial, crl);
 }
 
-bool CertGroup::findNextLink(int currentIndex, int certTwoSerial){
+bool CertGroup::findNextLink(int currentIndex, int certTwoSerial, CRL crl){
+    if(crl.find(currentIndex)==true){
+        cout<<"Cert found in CRL connection cannot be trusted."<<endl;
+        return false;
+    }
     for(int i = 0; i < certs.size(); i++){        
         // check if i cert was signed by currentIndex
         // i <- currentIndex
@@ -46,7 +54,7 @@ bool CertGroup::findNextLink(int currentIndex, int certTwoSerial){
             }
             else{
                 // look for next link in the chain
-                if(findNextLink(i, certTwoSerial)){
+                if(findNextLink(i, certTwoSerial, crl)){
                     return true;
                 }
             }
