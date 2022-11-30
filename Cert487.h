@@ -24,6 +24,8 @@ struct CertData{
     char signature;
 };
 
+bool cbcHashCheck(string fileName);
+
 class Cert487{
     private:
         CertData data;
@@ -39,6 +41,7 @@ class Cert487{
         void printLess();
         void writeToFile(string fileName);
         int getSerialNumber();
+        
         string getIssuer();
         string getSubjectName();
         CertData getData();
