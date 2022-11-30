@@ -26,13 +26,13 @@ CRL::CRL(string fileName){
         getline(crlFile, temp);
         parseLine(temp, parsedInput);
         if(parsedInput[0].compare("signatureAlgorithmIdentity")==0){
-            tempcrlobject.signatureAlgorithmIdentity = parsedInput[1];
+            strcpy(tempcrlobject.signatureAlgorithmIdentity, parsedInput[1].c_str());
         }
         else if(parsedInput[0].compare("signatureAlgorithmParameters")==0){
-            tempcrlobject.signatureAlgorithmParameters = parsedInput[1];
+            strcpy(tempcrlobject.signatureAlgorithmParameters, parsedInput[1].c_str());
         }
         else if(parsedInput[0].compare("issuerName")==0){
-            tempcrlobject.issuerName = parsedInput[1];
+            strcpy(tempcrlobject.issuerName, parsedInput[1].c_str());
         }
         else if(parsedInput[0].compare("thisDate")==0){
             tempcrlobject.thisDate = stoi(parsedInput[1]);
@@ -52,6 +52,8 @@ CRL::CRL(string fileName){
     //outfile.close();
 }
 
+CRL::CRL(){}
+
 void CRL::printCRL(string fileName){
     ifstream crlFile;
     crlFile.open(fileName);
@@ -64,6 +66,19 @@ void CRL::printCRL(string fileName){
     }
     outfile<<"signature="<<cbcHash(fileName);
     outfile.close();
+}
+
+void CRL::print(){
+    for(crlobject obj : crlList){
+        cout << "Signature Algorithm Identity: " << obj.signatureAlgorithmIdentity << endl;
+        cout << "Signature Algorithm Parameters: " << obj.signatureAlgorithmParameters << endl;
+        cout << "Issuer Name: " << obj.issuerName << endl;
+        cout << "This Date: " << obj.thisDate << endl;
+        cout << "Next Date: " << obj.nextDate << endl;
+        cout << "Revoked Serial Number: " << obj.revokedSerialNumber << endl;
+        cout << "Revoked Date: " << obj.revokedDate << endl << endl;
+    }
+    
 }
 
 bool CRL::cbcHashCheck(string fileName){
@@ -149,4 +164,16 @@ char CRL::cbcHash(string fileName){
 	}
     
 	return binaryToAscii(iv);
+}
+
+crlobject CRL::getObj(int index){
+    return crlList.at(index);
+}
+
+void CRL::addObj(crlobject obj){
+    crlList.push_back(obj);
+}
+
+int CRL::getNumObj(){
+    return crlList.size();
 }

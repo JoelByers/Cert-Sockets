@@ -2,15 +2,15 @@
 #define _CRL_H
 
 #include <string>
-#include <list>
+#include <vector>
 #include "Cert487.h"
 
 using namespace std;
 
 struct crlobject{
-    string signatureAlgorithmIdentity = "cbc";
-    string signatureAlgorithmParameters = "none";
-    string issuerName = "CertificateAuthority";
+    char signatureAlgorithmIdentity[50];
+    char signatureAlgorithmParameters[50];
+    char issuerName[50];
     int thisDate = 2;
     int nextDate=4;
     int revokedSerialNumber;
@@ -19,12 +19,17 @@ struct crlobject{
 
 class CRL{
     private:
-        list<crlobject> crlList;
+        vector<crlobject> crlList;
         char cbcHash(string fileName);
         bool cbcHashCheck(string fileName);
     public:
         CRL(string fileName);
+        CRL();
         void printCRL(string fileName);
+        void print();
+        crlobject getObj(int index);
+        void addObj(crlobject obj);
+        int getNumObj();
 };
 
 #endif
