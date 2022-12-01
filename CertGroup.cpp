@@ -53,6 +53,7 @@ bool CertGroup::findNextLink(int currentIndex, int certTwoSerial, CRL crl){
             && certs.at(i).getSerialNumber() != certs.at(currentIndex).getSerialNumber()){
             // handle self signed certs
             // if currentIndex signed checkIndex
+
             cout << "Chain Verified to " << certs.at(i).getSerialNumber() << " (" << certs.at(i).getSubjectName() << ")" << endl;;
 
             if(certs.at(i).getSerialNumber() == certTwoSerial){
