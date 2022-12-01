@@ -25,6 +25,7 @@ class CRL{
     public:
         CRL(string fileName);
         CRL();
+        int checkDate();
         void printCRL(string fileName);
         void print();
         crlobject getObj(int index);

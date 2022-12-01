@@ -1,4 +1,4 @@
-version=1
+version=181813280
 serialNumber=3
 signatureAlgorithmIdentity=cbc
 signatureAlgorithmParameters=none
@@ -14,4 +14,4 @@ extensions=none
 signatureAlgorithm=cbc
 signatureParameters=none
 trust=3
-signature=G
+signature=}
