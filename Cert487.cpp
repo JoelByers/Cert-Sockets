@@ -203,6 +203,7 @@ bool cbcHashCheck(CertData certDat){
     "publicKey="+to_string(certDat.publicKey)+"issuerUniqueIdentifier"+certDat.issuerUniqueIdentifier+"extensions="+certDat.extensions+"signatureAlgorithm="+certDat.signatureAlgorithm+"signatureParameters="+certDat.signatureParameters+
     "trust="+to_string(certDat.trust);
     char sig = certDat.signature;
+    cout<<temp<<endl;
 	// fstream infile(fileName);
 	// string temp;
     string temp1;
