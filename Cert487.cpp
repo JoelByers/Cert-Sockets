@@ -78,7 +78,6 @@ Cert487::Cert487(string fileName){
             cerr << "Invalid Certificate Field \"" << parsedInput[0] << "\"\n";
         }        
     }
-
     fileIn.close();
 }
 
@@ -113,7 +112,7 @@ void Cert487::printLine(string label, string data){
 }
 
 void Cert487::print(){
-    printLine("Version", to_string(data.version));
+    printLine("version", to_string(data.version));
     printLine("serialNumber", to_string(data.serialNumber));
     printLine("signatureAlgorithmIdentity", data.signatureAlgorithmIdentity);
     printLine("signatureAlgorithmParameters", data.signatureAlgorithmParameters);
@@ -147,7 +146,7 @@ void Cert487::writeToFile(string fileName){
     ofstream fileOut;
     fileOut.open(fileName);
     
-    writeLineToFile(fileOut, "Version", to_string(data.version));
+    writeLineToFile(fileOut, "version", to_string(data.version));
     writeLineToFile(fileOut, "serialNumber", to_string(data.serialNumber));
     writeLineToFile(fileOut, "signatureAlgorithmIdentity", data.signatureAlgorithmIdentity);
     writeLineToFile(fileOut, "signatureAlgorithmParameters", data.signatureAlgorithmParameters);
@@ -163,7 +162,7 @@ void Cert487::writeToFile(string fileName){
     writeLineToFile(fileOut, "signatureAlgorithm", data.signatureAlgorithm);
     writeLineToFile(fileOut, "signatureParameters", data.signatureParameters);
     writeLineToFile(fileOut, "trust", to_string(data.trust));
-    string signature(1, data.signature);
+    string signature(1, cbcHash());//data.signature);
     writeLineToFile(fileOut, "signature", signature);
 
     fileOut.close();
@@ -176,6 +175,7 @@ char Cert487::cbcHash(){
     "validNotBefore="+to_string(this->data.validNotBefore)+"validNotAfter="+to_string(this->data.validNotAfter)+"subjectName="+this->data.subjectName+"publicKeyAlgorithm="+this->data.publicKeyAlgorithm+"publicKeyParameters="+this->data.publicKeyParameters+
     "publicKey="+to_string(this->data.publicKey)+"issuerUniqueIdentifier"+this->data.issuerUniqueIdentifier+"extensions="+this->data.extensions+"signatureAlgorithm="+this->data.signatureAlgorithm+"signatureParameters="+this->data.signatureParameters+
     "trust="+to_string(this->data.trust);
+    cout<<temp<<endl;
 	
     bool iv[8] = {0,0,0,0,0,0,0,0};
 

@@ -85,6 +85,8 @@ int main(int argc, char** argv){
     cout << "Certs:" << endl;
     for(int i = 0; i < numCerts; i++){
         Cert487 cert(argv[i + 1]);
+        cbcHashCheck(cert.data);
+        //cert.writeToFile(argv[i+1]);
         cert.printLess();
         cout << "----------------------------------------------------\n";
         CertData data = cert.getData();

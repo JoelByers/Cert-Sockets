@@ -81,6 +81,13 @@ void CRL::print(){
     
 }
 
+int CRL::checkDate(){
+    if(crlList.size()>0){
+        return crlList.front().thisDate;
+    }
+    return 0;
+}
+
 bool CRL::cbcHashCheck(string fileName){
 	fstream infile(fileName);
 	string temp;
