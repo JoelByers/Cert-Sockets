@@ -17,10 +17,13 @@ bool CertGroup::validateChain(int certOneSerial, int certTwoSerial, CRL crl){
         cout<<"Starting or ending cert found in CRL. Connection cannot be trusted"<<endl;
         return false;
     }
-    // find starting cert
     for(int i = 0; i < certs.size(); i++){
         if(certs.at(i).getSerialNumber() == certOneSerial){
             chainStart = i;
+            if(cbcHashCheck(certs.at(i))==false){
+                cout<<"Starting cert does not hash to signature given. Connection cannot be trusted"<<endl;
+                return false;
+            }
             break;
         }
     }
@@ -35,8 +38,12 @@ bool CertGroup::validateChain(int certOneSerial, int certTwoSerial, CRL crl){
 }
 
 bool CertGroup::findNextLink(int currentIndex, int certTwoSerial, CRL crl){
-    if(crl.find(currentIndex)==true){
+    if(crl.find(certs.at(currentIndex).getSerialNumber())==true){
         cout<<"Cert found in CRL connection cannot be trusted."<<endl;
+        return false;
+    }
+    else if(cbcHashCheck(certs.at(currentIndex).data)==false){
+        cout<<"Cert does not hash to the signature provided"<<endl;
         return false;
     }
     for(int i = 0; i < certs.size(); i++){        

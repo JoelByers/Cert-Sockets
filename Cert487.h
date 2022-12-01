@@ -24,17 +24,17 @@ struct CertData{
     char signature;
 };
 
-bool cbcHashCheck(string fileName);
+bool cbcHashCheck(CertData certDat);
 
 class Cert487{
     private:
-        CertData data;
         void printLine(string label, string data);
         void parseCertLine(string input, string output[2]);
         void writeLineToFile(ofstream &fileOut, string label, string data);
-        char cbcHash(string fileName);
-        void sign(string signerFileName);
+        char cbcHash();
+        void sign();
     public:
+        CertData data;
         Cert487(string fileName);
         Cert487(CertData data);
         void print();
