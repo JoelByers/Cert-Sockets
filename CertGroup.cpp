@@ -35,7 +35,7 @@ bool CertGroup::validateChain(int certOneSerial, int certTwoSerial, CRL crl){
 }
 
 bool CertGroup::findNextLink(int currentIndex, int certTwoSerial, CRL crl){
-    if(crl.find(certs.at(currentIndex).getSerialNumber())==true){
+    if(crl.find(certs.at(currentIndex).getSerialNumber() && cbcHashCheck())==true){
         cout<<"Cert found in CRL connection cannot be trusted."<<endl;
         return false;
     }
