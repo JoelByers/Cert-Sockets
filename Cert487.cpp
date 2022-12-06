@@ -171,6 +171,7 @@ void Cert487::writeToFile(string fileName){
 char Cert487::cbcHash(){
 	// fstream infile(fileName);
 	// string temp;
+    RSA rsa;
     string temp = "version="+to_string(this->data.version)+"serialNumber="+to_string(this->data.serialNumber)+"signatureAlgorithmIdentity="+this->data.signatureAlgorithmParameters+"issuerName="+this->data.issuerName+
     "validNotBefore="+to_string(this->data.validNotBefore)+"validNotAfter="+to_string(this->data.validNotAfter)+"subjectName="+this->data.subjectName+"publicKeyAlgorithm="+this->data.publicKeyAlgorithm+"publicKeyParameters="+this->data.publicKeyParameters+
     "publicKey="+to_string(this->data.publicKey)+"issuerUniqueIdentifier"+this->data.issuerUniqueIdentifier+"extensions="+this->data.extensions+"signatureAlgorithm="+this->data.signatureAlgorithm+"signatureParameters="+this->data.signatureParameters+
@@ -194,15 +195,16 @@ char Cert487::cbcHash(){
         // }
 	}
     
-	return binaryToAscii(iv);
+	return char(rsa.encrypt(binaryToAscii(iv),this->data.publicKey));//char(rsa.encrypt(int(binaryToAscii(iv)), rsa.getE()));
 }
 
 bool cbcHashCheck(CertData certDat){
+    RSA rsa;
     string temp = "version="+to_string(certDat.version)+"serialNumber="+to_string(certDat.serialNumber)+"signatureAlgorithmIdentity="+certDat.signatureAlgorithmParameters+"issuerName="+certDat.issuerName+
     "validNotBefore="+to_string(certDat.validNotBefore)+"validNotAfter="+to_string(certDat.validNotAfter)+"subjectName="+certDat.subjectName+"publicKeyAlgorithm="+certDat.publicKeyAlgorithm+"publicKeyParameters="+certDat.publicKeyParameters+
     "publicKey="+to_string(certDat.publicKey)+"issuerUniqueIdentifier"+certDat.issuerUniqueIdentifier+"extensions="+certDat.extensions+"signatureAlgorithm="+certDat.signatureAlgorithm+"signatureParameters="+certDat.signatureParameters+
     "trust="+to_string(certDat.trust);
-    char sig = certDat.signature;
+    char sig = certDat.signature;//rsa.decrypt(certDat.signature, rsa.getD());
 	// fstream infile(fileName);
 	// string temp;
     string temp1;
@@ -210,36 +212,9 @@ bool cbcHashCheck(CertData certDat){
     // char sig;
     bool sig_present = false;
     int tempSerialNum;
-    RSA rsa;
+    //RSA rsa;
 	
     bool iv[8] = {0,0,0,0,0,0,0,0};
-
-	// while(getline(infile, temp)){
-        // if(temp.length()>10){
-        //     temp1 = temp.substr(0,10);
-        //     if(strcmp(temp1.c_str(),"signature=")==0){
-        //         sig = rsa.encrypt(int(temp[temp.length()-1]),rsa.getE());
-        //         sig_present = true;
-        //     }
-        // }
-        // if(temp.length()>13 &&sig_present == false){
-        //     try{
-        //         temp1 = temp.substr(0,13);
-        //     }
-        //     catch(...){
-        //         cout<<"ERROR"<<endl;
-        //     }
-            
-        // }
-        // if(strcmp(temp1.c_str(),"serialNumber=")==0){
-        //     try{
-        //         tempSerialString = temp.substr(13,temp.length());
-        //     }
-        //     catch(...){
-        //         cout<<"ERROR CAUGHT"<<endl;
-        //     }
-        //     tempSerialNum = stoi(tempSerialString);
-        // }
 		for(int i = 0; i < temp.length(); i++){
 			bool bits[8] = {0,0,0,0,0,0,0,0};
 			bool key[10] = {0,0,0,0,0,0,0,0,0,0};
@@ -254,8 +229,8 @@ bool cbcHashCheck(CertData certDat){
 		}
 	// }
     // if(sig_present == true){
-        cout<<sig<<" : "<<binaryToAscii(iv)<<endl;
-        if(sig != binaryToAscii(iv)){
+        cout<<sig<<" : "<<char(rsa.encrypt(binaryToAscii(iv),certDat.publicKey))<<endl;
+        if(sig != char(rsa.encrypt(binaryToAscii(iv),certDat.publicKey))){
             return false;
         }
     // }
