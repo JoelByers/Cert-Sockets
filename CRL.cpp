@@ -19,55 +19,69 @@ CRL::CRL(string fileName){
     ifstream crlFile;
     crlFile.open(fileName);
     ofstream outfile;
-    outfile.open("CRLout.txt");
+    //outfile.open("CRLout.txt");
     string temp;
     string parsedInput[2] = {"",""};
     while(!crlFile.eof()){
         getline(crlFile, temp);
         parseLine(temp, parsedInput);
-        if(parsedInput[0].compare("signatureAlgorithmIdentity")==0){
+        if(parsedInput[0].compare("Signature Algorithm Identity")==0){
             strcpy(tempcrlobject.signatureAlgorithmIdentity, parsedInput[1].c_str());
         }
-        else if(parsedInput[0].compare("signatureAlgorithmParameters")==0){
+        else if(parsedInput[0].compare("Signature Algorithm Parameters")==0){
             strcpy(tempcrlobject.signatureAlgorithmParameters, parsedInput[1].c_str());
         }
-        else if(parsedInput[0].compare("issuerName")==0){
+        else if(parsedInput[0].compare("Issuer Name")==0){
             strcpy(tempcrlobject.issuerName, parsedInput[1].c_str());
         }
-        else if(parsedInput[0].compare("thisDate")==0){
+        else if(parsedInput[0].compare("This Date")==0){
             tempcrlobject.thisDate = stoi(parsedInput[1]);
         }
-        else if(parsedInput[0].compare("nextDate")==0){
+        else if(parsedInput[0].compare("Next Date")==0){
             tempcrlobject.nextDate = stoi(parsedInput[1]);
         }
-        else if(parsedInput[0].compare("revokedSerialNumber")==0){
+        else if(parsedInput[0].compare("Revoked Serial Number")==0){
             tempcrlobject.revokedSerialNumber = stoi(parsedInput[1]);
         }
-        else if(parsedInput[0].compare("revokedDate")==0){
+        else if(parsedInput[0].compare("Revoked Date")==0){
             tempcrlobject.revokedDate = stoi(parsedInput[1]);
             crlList.push_back(tempcrlobject);
         }
+        else if(parsedInput[0].compare("signature")==0){
+            cout<<"got here: "<<parsedInput[1]<<endl;
+            signature = parsedInput[1][0];
+        }
     }
+    //signature = getSignature();
     //outfile<<"signature="<<cbcHash(fileName);
     //outfile.close();
 }
 
 CRL::CRL(){}
 
-void CRL::printCRL(string fileName){
-    ifstream crlFile;
-    crlFile.open(fileName);
+
+
+void CRL::printCRL(){
+    // ifstream crlFile;
+    // crlFile.open(fileName);
     ofstream outfile;
-    outfile.open("CRLout.txt");
+    outfile.open("crl.txt");
     string temp;
-    while(!crlFile.eof()){
-        getline(crlFile, temp);
-        outfile<<temp<<endl;
+    for(crlobject obj : crlList){
+        writeLineToFile(outfile, "Signature Algorithm Identity", obj.signatureAlgorithmIdentity);
+        writeLineToFile(outfile, "Signature Algorithm Parameters", obj.signatureAlgorithmParameters);
+        writeLineToFile(outfile, "Issuer Name", obj.issuerName);
+        writeLineToFile(outfile, "This Date", to_string(obj.thisDate));
+        writeLineToFile(outfile, "Revoked Serial Number", to_string(obj.revokedSerialNumber));
+        writeLineToFile(outfile, "Revoked Date", to_string(obj.revokedDate));
     }
-    outfile<<"signature="<<cbcHash(fileName);
+    string sign(1,cbcHash());
+    writeLineToFile(outfile, "signature", sign);
     outfile.close();
 }
-
+void CRL::writeLineToFile(ofstream &fileOut, string label, string data){
+    fileOut << label << "=" << data << "\n";
+}
 void CRL::print(){
     for(crlobject obj : crlList){
         cout << "Signature Algorithm Identity: " << obj.signatureAlgorithmIdentity << endl;
@@ -88,87 +102,71 @@ int CRL::checkDate(){
     return 0;
 }
 
-bool CRL::cbcHashCheck(string fileName){
-	fstream infile(fileName);
+bool CRL::cbcHashCheck(){
+	// fstream infile(fileName);
 	string temp;
-    string temp1;
-    string tempSerialString;
-    char sig;
-    bool sig_present = false;
-    int tempSerialNum;
+    for(crlobject obj : crlList){
+        temp += "Signature Algorithm Identity: " + string(obj.signatureAlgorithmIdentity) + "Signature Algorithm Parameters: "+string(obj.signatureAlgorithmParameters)+
+                "Issuer Name: " + string(obj.issuerName) + "This Date: "+to_string(obj.thisDate) + "Next Date: " + to_string(obj.nextDate) + "Revoked Serial Number: "+to_string(obj.revokedSerialNumber)+
+                "Revoked Date: " + to_string(obj.revokedDate);
+    }
+    // string temp1;
+    // string tempSerialString;
+    char sig = signature;
+    // bool sig_present = false;
+    // int tempSerialNum;
     RSA rsa;
 	
     bool iv[8] = {0,0,0,0,0,0,0,0};
 
-	while(getline(infile, temp)){
-        if(temp.length()>10){
-            temp1 = temp.substr(0,10);
-            if(strcmp(temp1.c_str(),"signature=")==0){
-                sig = rsa.encrypt(int(temp[temp.length()-1]),rsa.getE());
-                sig_present = true;
-            }
-        }
-        if(temp.length()>13 &&sig_present == false){
-            try{
-                temp1 = temp.substr(0,13);
-            }
-            catch(...){
-                cout<<"ERROR"<<endl;
-            }
+    for(int i = 0; i < temp.length(); i++){
+        bool bits[8] = {0,0,0,0,0,0,0,0};
+        bool key[10] = {0,0,0,0,0,0,0,0,0,0};
+        asciiToBinary(temp[i], bits);
+        exclusiveOr(bits, iv, 8); //exclusive or before encrypting with iv
+        encrypt(bits, key);
             
+        for(int j = 0; j < 8; j++){
+            iv[j] = bits[j];
         }
-        if(strcmp(temp1.c_str(),"serialNumber=")==0){
-            try{
-                tempSerialString = temp.substr(13,temp.length());
-            }
-            catch(...){
-                cout<<"ERROR CAUGHT"<<endl;
-            }
-            tempSerialNum = stoi(tempSerialString);
-        }
-		for(int i = 0; i < temp.length(); i++){
-			bool bits[8] = {0,0,0,0,0,0,0,0};
-			bool key[10] = {0,0,0,0,0,0,0,0,0,0};
-			asciiToBinary(temp[i], bits);
-			exclusiveOr(bits, iv, 8); //exclusive or before encrypting with iv
-			encrypt(bits, key);
-				
-			for(int j = 0; j < 8; j++){
-				iv[j] = bits[j];
-			}
-			temp[i] = binaryToAscii(bits);
-		}
-	}
-    if(sig_present == true){
-        cout<<sig<<" : "<<binaryToAscii(iv)<<endl;
-        if(sig != binaryToAscii(iv)){
-            return false;
-        }
+        temp[i] = binaryToAscii(bits);
     }
+	// }
+    // if(sig_present == true){
+    cout<<sig<<" : "<<binaryToAscii(iv)<<endl;
+    if(sig != binaryToAscii(iv)){
+        return false;
+    }
+    // }
     
 	return true;
 }
 
-char CRL::cbcHash(string fileName){
-	fstream infile(fileName);
+char CRL::cbcHash(){
+	// fstream infile(fileName);
 	string temp;
-	
+	for(crlobject obj : crlList){
+        temp += "Signature Algorithm Identity: ";
+        temp += string(obj.signatureAlgorithmIdentity) + "Signature Algorithm Parameters: "+obj.signatureAlgorithmParameters+
+                "Issuer Name: " + obj.issuerName + "This Date: "+ to_string(obj.thisDate) + "Next Date: " + to_string(obj.nextDate) + "Revoked Serial Number: "+to_string(obj.revokedSerialNumber)+
+                "Revoked Date: " + to_string(obj.revokedDate);
+    }
     bool iv[8] = {0,0,0,0,0,0,0,0};
 
-	while(getline(infile, temp)){
-		for(int i = 0; i < temp.length(); i++){
-			bool bits[8] = {0,0,0,0,0,0,0,0};
-			bool key[10] = {0,0,0,0,0,0,0,0,0,0};
-			asciiToBinary(temp[i], bits);
-			exclusiveOr(bits, iv, 8); //exclusive or before encrypting with iv
-			encrypt(bits, key);
-				
-			for(int j = 0; j < 8; j++){
-				iv[j] = bits[j];
-			}
-			temp[i] = binaryToAscii(bits);
-		}
-	}
+	// while(getline(infile, temp)){
+    for(int i = 0; i < temp.length(); i++){
+        bool bits[8] = {0,0,0,0,0,0,0,0};
+        bool key[10] = {0,0,0,0,0,0,0,0,0,0};
+        asciiToBinary(temp[i], bits);
+        exclusiveOr(bits, iv, 8); //exclusive or before encrypting with iv
+        encrypt(bits, key);
+            
+        for(int j = 0; j < 8; j++){
+            iv[j] = bits[j];
+        }
+        temp[i] = binaryToAscii(bits);
+    }
+	// }
     
 	return binaryToAscii(iv);
 }

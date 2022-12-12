@@ -10,18 +10,23 @@ void CertGroup::addCert(Cert487 cert){
     certs.push_back(cert);
 }
 
-bool CertGroup::validateChain(int certOneSerial, int certTwoSerial, CRL crl){
+bool CertGroup::validateChain(int certOneSerial, int certTwoSerial, CRL crl, bool crlValid){
     // holds the indecies of the chain from the group
     int chainStart = -1;
-    if(crl.find(certOneSerial)==true||crl.find(certTwoSerial)==true){
+    if((crl.find(certOneSerial)==true||crl.find(certTwoSerial)==true)&&crlValid == true){
         cout<<"Starting or ending cert found in CRL. Connection cannot be trusted"<<endl;
         return false;
     }
+    //else if(certs.)
     for(int i = 0; i < certs.size(); i++){
         if(certs.at(i).getSerialNumber() == certOneSerial){
             chainStart = i;
             if(cbcHashCheck(certs.at(i).data)==false){
                 cout<<"Starting cert does not hash to signature given. Connection cannot be trusted"<<endl;
+                return false;
+            }
+            else if(certs.at(i).data.validNotBefore>crl.checkDate()||certs.at(i).data.validNotAfter<crl.checkDate()){
+                cout<<"Starting cert is outside of valid time range. Connection cannot be trusted"<<endl;
                 return false;
             }
             break;
@@ -34,16 +39,20 @@ bool CertGroup::validateChain(int certOneSerial, int certTwoSerial, CRL crl){
         return false;
     }
 
-    return findNextLink(chainStart, certTwoSerial, crl);
+    return findNextLink(chainStart, certTwoSerial, crl, crlValid);
 }
 
-bool CertGroup::findNextLink(int currentIndex, int certTwoSerial, CRL crl){
-    if(crl.find(certs.at(currentIndex).getSerialNumber())==true){
+bool CertGroup::findNextLink(int currentIndex, int certTwoSerial, CRL crl, bool crlValid){
+    if(crl.find(certs.at(currentIndex).getSerialNumber())==true && crlValid ==true){
         cout<<"Cert found in CRL connection cannot be trusted."<<endl;
         return false;
     }
     else if(cbcHashCheck(certs.at(currentIndex).data)==false){
         cout<<"Cert does not hash to the signature provided"<<endl;
+        return false;
+    }
+    else if(certs.at(currentIndex).data.validNotBefore>crl.checkDate()||certs.at(currentIndex).data.validNotAfter<crl.checkDate()){
+        cout<<"Cert is outside of valid time range"<<endl;
         return false;
     }
     for(int i = 0; i < certs.size(); i++){        
@@ -62,7 +71,7 @@ bool CertGroup::findNextLink(int currentIndex, int certTwoSerial, CRL crl){
             }
             else{
                 // look for next link in the chain
-                if(findNextLink(i, certTwoSerial, crl)){
+                if(findNextLink(i, certTwoSerial, crl, crlValid)){
                     return true;
                 }
             }

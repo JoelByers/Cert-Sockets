@@ -9,10 +9,10 @@
 class CertGroup {
     private:
         vector<Cert487> certs;
-        bool findNextLink(int currentIndex, int certTwoSerial, CRL crl);
+        bool findNextLink(int currentIndex, int certTwoSerial, CRL crl, bool crlValid);
     public:
         void addCert(Cert487 cert);
-        bool validateChain(int certOneSerial, int certTwoSerial, CRL crl);
+        bool validateChain(int certOneSerial, int certTwoSerial, CRL crl, bool crlValid);
         void print();
 
 };

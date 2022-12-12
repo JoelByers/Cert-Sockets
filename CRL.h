@@ -19,14 +19,19 @@ struct crlobject{
 
 class CRL{
     private:
+        
         vector<crlobject> crlList;
-        char cbcHash(string fileName);
-        bool cbcHashCheck(string fileName);
+        
     public:
+        char signature;
+        char cbcHash();
+        bool cbcHashCheck();
         CRL(string fileName);
         CRL();
+        char getSignature();
+        void writeLineToFile(ofstream &fileOut, string label, string data);
         int checkDate();
-        void printCRL(string fileName);
+        void printCRL();
         void print();
         crlobject getObj(int index);
         void addObj(crlobject obj);

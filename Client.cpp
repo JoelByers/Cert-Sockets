@@ -37,18 +37,28 @@ int main(){
 // RECEIVE CRL //////////////////////////////////////////////////////////////////////////////
 
     CRL crl;
-
+    bool crlValid = true;
     int numCrlObj;
     recv(socket_description, &numCrlObj, sizeof(numCrlObj), 0);
+    char signature;
+    recv(socket_description, &signature, sizeof(signature),0);
+    //cout<<"signature: "<<signature<<endl;
     for(int i = 0; i < numCrlObj; i++){
         crlobject obj;
         recv(socket_description, &obj, sizeof(obj), 0);
         crl.addObj(obj);
     }
-
-    cout << "CRL:" << endl;
-    crl.print();
-    cout << "=============================================" << endl;
+    crl.signature = signature;
+    if(crl.cbcHashCheck()==false){
+        crlValid = false;
+        cout<<"Given CRL hash does not match the hash of the CRL given"<<endl;
+    }
+    else{
+        cout << "CRL:" << endl;
+        crl.print();
+        cout << "=============================================" << endl;
+    }
+    
 
 // RECEIVE CERTS ////////////////////////////////////////////////////////////////////////////
     
@@ -79,7 +89,7 @@ int main(){
     cin >> end;
     cout << endl;
 
-    if(group.validateChain(start, end, crl)){
+    if(group.validateChain(start, end, crl, crlValid)){
         cout << "A valid chain can be found" << endl;
     }
     else{

@@ -5,3 +5,4 @@ thisDate=2
 nextDate=4
 revokedSerialNumber=345
 revokedDate=2
+signature=g
