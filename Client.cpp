@@ -37,7 +37,7 @@ int main(){
 // RECEIVE CRL //////////////////////////////////////////////////////////////////////////////
 
     CRL crl;
-
+    bool crlValid = true;
     int numCrlObj;
     recv(socket_description, &numCrlObj, sizeof(numCrlObj), 0);
     char signature;
@@ -49,6 +49,7 @@ int main(){
     }
     crl.signature = signature;
     if(crl.cbcHashCheck()==false){
+        crlValid = false;
         cout<<"Given CRL hash does not match the hash of the CRL given"<<endl;
     }
     else{
@@ -87,7 +88,7 @@ int main(){
     cin >> end;
     cout << endl;
 
-    if(group.validateChain(start, end, crl)){
+    if(group.validateChain(start, end, crl, crlValid)){
         cout << "A valid chain can be found" << endl;
     }
     else{

@@ -19,7 +19,7 @@ CRL::CRL(string fileName){
     ifstream crlFile;
     crlFile.open(fileName);
     ofstream outfile;
-    outfile.open("CRLout.txt");
+    //outfile.open("CRLout.txt");
     string temp;
     string parsedInput[2] = {"",""};
     while(!crlFile.eof()){

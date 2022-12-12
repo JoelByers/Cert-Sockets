@@ -4,4 +4,4 @@ Issuer Name=CertificateAuthority
 This Date=5
 Revoked Serial Number=9
 Revoked Date=2
-signature=Ã
+signature=ï¿½
