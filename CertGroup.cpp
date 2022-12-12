@@ -25,7 +25,7 @@ bool CertGroup::validateChain(int certOneSerial, int certTwoSerial, CRL crl, boo
                 cout<<"Starting cert does not hash to signature given. Connection cannot be trusted"<<endl;
                 return false;
             }
-            else if(certs.at(i).data.validNotBefore>crl.checkDate()||certs.at(i).data.validNotAfter<crl.checkDate()){
+            else if((certs.at(i).data.validNotBefore>crl.checkDate()||certs.at(i).data.validNotAfter<crl.checkDate())&&crlValid==true){
                 cout<<"Starting cert is outside of valid time range. Connection cannot be trusted"<<endl;
                 return false;
             }
@@ -51,7 +51,7 @@ bool CertGroup::findNextLink(int currentIndex, int certTwoSerial, CRL crl, bool 
         cout<<"Cert does not hash to the signature provided"<<endl;
         return false;
     }
-    else if(certs.at(currentIndex).data.validNotBefore>crl.checkDate()||certs.at(currentIndex).data.validNotAfter<crl.checkDate()){
+    else if((certs.at(currentIndex).data.validNotBefore>crl.checkDate()||certs.at(currentIndex).data.validNotAfter<crl.checkDate())&&crlValid ==true){
         cout<<"Cert is outside of valid time range"<<endl;
         return false;
     }
