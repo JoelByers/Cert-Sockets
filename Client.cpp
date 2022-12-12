@@ -40,15 +40,23 @@ int main(){
 
     int numCrlObj;
     recv(socket_description, &numCrlObj, sizeof(numCrlObj), 0);
+    char signature;
+    recv(socket_description, &signature, sizeof(signature),0);
     for(int i = 0; i < numCrlObj; i++){
         crlobject obj;
         recv(socket_description, &obj, sizeof(obj), 0);
         crl.addObj(obj);
     }
-
-    cout << "CRL:" << endl;
-    crl.print();
-    cout << "=============================================" << endl;
+    crl.signature = signature;
+    if(crl.cbcHashCheck()==false){
+        cout<<"Given CRL hash does not match the hash of the CRL given"<<endl;
+    }
+    else{
+        cout << "CRL:" << endl;
+        crl.print();
+        cout << "=============================================" << endl;
+    }
+    
 
 // RECEIVE CERTS ////////////////////////////////////////////////////////////////////////////
     

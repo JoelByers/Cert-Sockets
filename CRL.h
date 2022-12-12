@@ -19,11 +19,13 @@ struct crlobject{
 
 class CRL{
     private:
-        char signature;
+        
         vector<crlobject> crlList;
-        char cbcHash(string fileName);
-        bool cbcHashCheck();
+        
     public:
+        char signature;
+        char cbcHash();
+        bool cbcHashCheck();
         CRL(string fileName);
         CRL();
         char getSignature();

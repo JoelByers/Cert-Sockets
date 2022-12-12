@@ -51,7 +51,7 @@ int main(int argc, char** argv){
 // Send CRL //////////////////////////////////////////////////////////////////////////////
 
     CRL crl("crl.txt");
-    crl.writeToFile();
+    //crl.printCRL();
     cout << "\nCRL:" << endl;
     crl.print();
     cout << "=============================================" << endl;
@@ -63,6 +63,10 @@ int main(int argc, char** argv){
         cout << "Unable to send server data to client";
         return 1;
     } 
+    if(send(new_socket, &crl.signature, sizeof(crl.signature), 0) < 0){
+        cout << "Unable to send the hash of the crl to client";
+        return 1;
+    }
 
     for(int i = 0; i < numObj; i++){
         crlobject obj = crl.getObj(i);
@@ -87,7 +91,7 @@ int main(int argc, char** argv){
     for(int i = 0; i < numCerts; i++){
         Cert487 cert(argv[i + 1]);
         //cbcHashCheck(cert.data);
-        // cert.writeToFile(argv[i+1]);
+        //cert.writeToFile(argv[i+1]);
         cert.printLess();
         cout << "----------------------------------------------------\n";
         CertData data = cert.getData();

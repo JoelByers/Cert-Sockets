@@ -1,0 +1,17 @@
+version=181813280
+serialNumber=1
+signatureAlgorithmIdentity=cbc
+signatureAlgorithmParameters=none
+issuerName=Alice
+validNotBefore=3
+validNotAfter=4
+subjectName=Alice
+publicKeyAlgorithm=rsa
+publicKeyParameters=none
+publicKey=17
+issuerUniqueIdentifier=asdf123
+extensions=none
+signatureAlgorithm=cbc
+signatureParameters=none
+trust=3
+signature=@
